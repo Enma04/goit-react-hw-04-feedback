@@ -1,83 +1,63 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Statistics from 'components/Statistics/Statistics';
 import FeedbackOptions from 'components/FeedbackOptions/FeedbackOptions';
 import Section from 'components/Section/Section';
 import Notification from 'components/Notification/Notification';
 
-export default class FeedBack extends Component {
+export default function FeedBack({ step=1, initialValue=0 }) {
   //--------------------------------------
   //------------- PROPS CLASS DEFINITIONS
-  static defaultProps = {
-    step: 1,
-    total: 0,
-    percentage: 0,
-    initialValue: 0,
-  };
-
-  static propTypes = {
+  const [good, setGood] = useState(initialValue);
+  const [neutral, setNeutral] = useState(initialValue);
+  const [bad, setBad] = useState(initialValue);
+  const [total, setTotal] = useState(initialValue);
+  const [percentage, setPercentage] = useState(initialValue);
+  
+  const propTypes = {
     step: PropTypes.number,
     initialValue: PropTypes.number,
   };
 
+
   //--------------------------------------
-  //------------- CLASS FUNCTIONS
-  funcAdd(event) {
+  //------------- useEffects
+  useEffect(() => {
+    console.log("Cambiando el total...", total);
+    countTotalFeedback();
+  }, [good, neutral, bad]);
+
+  useEffect(() => {
+    console.log("Cambiando el percentage...", percentage);
+    countPositiveFeedbackPercentage();
+  }, [good]);
+
+
+  //--------------------------------------
+  //------------- FUNCTIONS
+  const funcAdd = (event) => {
     const type = event.target.id;
-    const { step } = this.props;
 
-    this.setState( prevState => ({
-      [type]: prevState[type] + step,
-    }));
-
-    this.countTotalFeedback();
-    this.countPositiveFeedbackPercentage();
+    if(type === good) setGood(good + step);
+    if(type === neutral) setNeutral(neutral + step);
+    if(type === bad) setBad(bad + step);
   }
 
-  countTotalFeedback() {
-    this.setState(prev => {
-      const { good, neutral, bad } = prev;
-      return { total: good + neutral + bad };
-    });
+  const countTotalFeedback = () => {
+    setTotal( good + neutral + bad );
   }
 
-  countPositiveFeedbackPercentage() {
-    this.setState(prev => {
-      const { good, total } = prev;
-      return { percentage: Math.round((good / total) * 100) };
-    });
+  const countPositiveFeedbackPercentage = () => {
+    setPercentage( Math.round((good / total) * 100) );
   }
+
 
   //--------------------------------------
-  //------------- CLASS CONSTRUCTOR
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      good: this.props.initialValue,
-      neutral: this.props.initialValue,
-      bad: this.props.initialValue,
-      total: this.props.initialValue,
-      percentage: this.props.initialValue,
-    };
-
-    this.funcAdd = this.funcAdd.bind(this);
-    this.countTotalFeedback = this.countTotalFeedback.bind(this);
-    this.countPositiveFeedbackPercentage =
-      this.countPositiveFeedbackPercentage.bind(this);
-  }
-  /*
- 
-*/
-  //--------------------------------------
-  //------------- RENDER METOD
-  render() {
-    const { good, neutral, bad, total, percentage } = this.state;
-
+  //------------- RETURN
     return (
       <div className="feedBackSec">
         <Section title="Please Leave a Feedback">
-          <FeedbackOptions onLeaveFeedback={this.funcAdd} />
+          <FeedbackOptions onLeaveFeedback={funcAdd} />
         </Section>
         <Section title="Statistics">
           {total === 0 ? (
@@ -94,5 +74,4 @@ export default class FeedBack extends Component {
         </Section>
       </div>
     );
-  }
 }

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Statistics from 'components/Statistics/Statistics';
 import FeedbackOptions from 'components/FeedbackOptions/FeedbackOptions';
-import Section from 'components/Section/Section';
+import {Section} from 'components/Section/Section';
 import Notification from 'components/Notification/Notification';
 
 export default function FeedBack({ step=1, initialValue=0 }) {

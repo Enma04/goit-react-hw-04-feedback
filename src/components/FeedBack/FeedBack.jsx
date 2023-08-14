@@ -13,24 +13,14 @@ export default function FeedBack({ step=1, initialValue=0 }) {
   const [bad, setBad] = useState(initialValue);
   const [total, setTotal] = useState(initialValue);
   const [percentage, setPercentage] = useState(initialValue);
-  
-  const propTypes = {
-    step: PropTypes.number,
-    initialValue: PropTypes.number,
-  };
 
 
   //--------------------------------------
   //------------- useEffects
   useEffect(() => {
-    console.log("Cambiando el total...", total);
-    countTotalFeedback();
-  }, [good, neutral, bad]);
-
-  useEffect(() => {
-    console.log("Cambiando el percentage...", percentage);
-    countPositiveFeedbackPercentage();
-  }, [good]);
+    setTotal( good + neutral + bad );
+    setPercentage( Math.round( (good / total) * 100) );
+  }, [good, neutral, bad, total]);
 
 
   //--------------------------------------
@@ -38,17 +28,9 @@ export default function FeedBack({ step=1, initialValue=0 }) {
   const funcAdd = (event) => {
     const type = event.target.id;
 
-    if(type === good) setGood(good + step);
-    if(type === neutral) setNeutral(neutral + step);
-    if(type === bad) setBad(bad + step);
-  }
-
-  const countTotalFeedback = () => {
-    setTotal( good + neutral + bad );
-  }
-
-  const countPositiveFeedbackPercentage = () => {
-    setPercentage( Math.round((good / total) * 100) );
+    if(type === "good") setGood(good + step);
+    if(type === "neutral") setNeutral(neutral + step);
+    if(type === "bad") setBad(bad + step);
   }
 
 
@@ -75,3 +57,11 @@ export default function FeedBack({ step=1, initialValue=0 }) {
       </div>
     );
 }
+
+
+//--------------------------------------
+//------------- PROPTYPES
+  FeedBack.propTypes = {
+    step: PropTypes.number,
+    initialValue: PropTypes.number,
+  };
